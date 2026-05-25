@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>撮影進捗 Sync-Lite</title>
+<title>班チェック Sync-Lite Ver3.4</title>
 <meta name="theme-color" content="#007aff">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -11,15 +11,25 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,sans-serif;background:#f2f2f7;padding-bottom:80px;font-size:15px}
 
-.header{position:sticky;top:0;z-index:100;background:rgba(242,242,247,0.92);backdrop-filter:blur(12px);padding:10px 14px 8px}
+/* ── ヘッダー ── */
+.header{position:sticky;top:0;z-index:100;background:rgba(242,242,247,0.95);backdrop-filter:blur(12px);padding:10px 14px 8px;border-bottom:0.5px solid rgba(0,0,0,0.1)}
 .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .app-title{font-size:13px;font-weight:600;color:#8e8e93}
 .counter{font-size:13px;font-weight:600;color:#1c1c1e}
 .progress-track{height:4px;background:#d1d1d6;border-radius:2px}
 .progress-fill{height:100%;background:#34c759;border-radius:2px;transition:width 0.4s ease}
-.filter-row{display:flex;align-items:center;gap:6px;margin-top:7px;font-size:12px;color:#3c3c43}
-.filter-row input{accent-color:#007aff}
+.filter-row{display:flex;align-items:center;justify-content:space-between;margin-top:7px}
+.filter-left{display:flex;align-items:center;gap:6px;font-size:12px;color:#3c3c43}
+.filter-left input{accent-color:#007aff}
 
+/* ── アンドゥ・リドゥ ── */
+.history-btns{display:flex;gap:4px}
+.hist-btn{background:none;border:none;padding:4px 6px;font-size:16px;cursor:pointer;border-radius:6px;color:#007aff;opacity:0.25;pointer-events:none;transition:opacity 0.15s,background 0.15s;line-height:1}
+.hist-btn.on{opacity:1;pointer-events:auto}
+.hist-btn.on:active{background:rgba(0,122,255,0.12)}
+.hist-count{font-size:9px;color:#007aff;font-weight:700;vertical-align:super;margin-left:1px}
+
+/* ── グリッド ── */
 .container{padding:10px 10px 0}
 .class-card{background:#fff;border-radius:12px;margin-bottom:10px;overflow:hidden;border:0.5px solid rgba(0,0,0,0.08)}
 .class-title{padding:8px 12px;font-size:12px;font-weight:600;color:#8e8e93;background:#f8f8f8;border-bottom:0.5px solid rgba(0,0,0,0.06);letter-spacing:0.3px}
@@ -38,6 +48,7 @@ body{font-family:-apple-system,sans-serif;background:#f2f2f7;padding-bottom:80px
 
 .has-peer{outline:3px solid #ffcc00;outline-offset:-1px}
 
+/* ── パネル ── */
 .section-panel{background:#fff;border-radius:12px;margin-bottom:10px;border:0.5px solid rgba(0,0,0,0.08);overflow:hidden}
 .section-head{padding:12px 14px;font-size:14px;font-weight:600;color:#1c1c1e;border-bottom:0.5px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;cursor:pointer}
 .section-head .arrow{font-size:11px;color:#8e8e93;transition:transform 0.2s}
@@ -63,37 +74,50 @@ textarea{height:72px;resize:none;font-size:12px;font-family:-apple-system,sans-s
 .btn-copy{background:#1c1c1e;color:#fff}
 .btn-import{background:#007aff;color:#fff}
 
-.sync-note{font-size:12px;color:#8e8e93;background:#f8f8f8;border-radius:8px;padding:8px 10px;margin-bottom:10px;line-height:1.5}
-.sync-note span{display:inline-block;width:10px;height:10px;border-radius:2px;background:#ffcc00;border:2px solid #e6b800;vertical-align:middle;margin-right:4px}
+.sync-note{font-size:12px;color:#8e8e93;background:#f8f8f8;border-radius:8px;padding:8px 10px;margin-bottom:10px;line-height:1.6}
+.sync-note .peer-dot{display:inline-block;width:10px;height:10px;border-radius:2px;background:#ffcc00;border:2px solid #e6b800;vertical-align:middle;margin-right:4px}
 
+/* データサイズ表示 */
+.data-size{font-size:11px;color:#8e8e93;text-align:right;margin-top:4px;min-height:16px}
+.data-size.warn{color:#ff9500}
+
+/* ── モーダル ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:flex-end;justify-content:center}
-.modal{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:480px;padding:20px 16px 32px;}
-.modal{animation:slideup 0.12s ease}@keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:480px;padding:20px 16px 32px}
+.modal{animation:slideup 0.12s ease}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .modal-title{font-size:13px;font-weight:600;color:#8e8e93;text-align:center;margin-bottom:4px}
 .modal-cell-id{font-size:22px;font-weight:700;color:#1c1c1e;text-align:center;margin-bottom:16px}
 .status-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.status-opt{padding:12px;border-radius:10px;text-align:center;cursor:pointer;font-size:14px;font-weight:600;border:2px solid transparent;transition:all 0.15s}
+.status-opt{padding:14px;border-radius:10px;text-align:center;cursor:pointer;font-size:14px;font-weight:600;border:2px solid transparent;transition:all 0.15s}
 .status-opt:active{transform:scale(0.96)}
-.status-opt.current{border-color:#1c1c1e !important}
+.status-opt.current{border-color:#1c1c1e !important;box-shadow:0 0 0 2px rgba(0,0,0,0.15)}
 .opt-0{background:#f2f2f7;color:#3c3c43}
 .opt-1{background:#007aff;color:#fff}
 .opt-2{background:#ff3b30;color:#fff}
 .opt-3{background:#ff9500;color:#fff}
 .opt-4{background:#34c759;color:#fff}
 .modal-cancel{width:100%;padding:12px;margin-top:12px;border-radius:10px;border:none;background:#f2f2f7;font-size:15px;font-weight:600;color:#3c3c43;cursor:pointer}
+.modal-cancel:active{opacity:0.7}
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-top">
-    <span class="app-title">📸 Sync-Lite</span>
+    <span class="app-title">📸 Sync-Lite <span style="color:#007aff">3.4</span></span>
+    <div class="history-btns">
+      <button id="undoBtn" class="hist-btn" onclick="undo()" title="戻す">↩<span class="hist-count" id="undoCount"></span></button>
+      <button id="redoBtn" class="hist-btn" onclick="redo()" title="やり直し">↪<span class="hist-count" id="redoCount"></span></button>
+    </div>
     <span class="counter" id="counter">0 / 0</span>
   </div>
   <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   <div class="filter-row">
-    <input type="checkbox" id="filterUnshot" onchange="renderGrid()">
-    <label for="filterUnshot">未撮影のみ表示</label>
+    <div class="filter-left">
+      <input type="checkbox" id="filterUnshot" onchange="renderGrid()">
+      <label for="filterUnshot">未撮影のみ表示</label>
+    </div>
   </div>
 </div>
 
@@ -111,10 +135,10 @@ textarea{height:72px;resize:none;font-size:12px;font-family:-apple-system,sans-s
       <input type="text" id="myName" placeholder="例: 田中" maxlength="10">
 
       <label class="field-label">クラス数</label>
-      <input type="number" id="classNum" value="4" min="1" max="40">
+      <input type="number" id="classNum" value="8" min="1" max="40">
 
       <label class="field-label">班数</label>
-      <input type="number" id="groupNum" value="6" min="1" max="30">
+      <input type="number" id="groupNum" value="9" min="1" max="30">
 
       <label class="field-label">班の表示</label>
       <div class="type-row">
@@ -138,9 +162,14 @@ textarea{height:72px;resize:none;font-size:12px;font-family:-apple-system,sans-s
       <span class="arrow open" id="arrow-sync">▼</span>
     </div>
     <div class="section-body open" id="body-sync">
-      <div class="sync-note"><span></span>黄色い枠線：仲間が撮影済みの班</div>
-      <p style="font-size:13px;color:#3c3c43;margin-bottom:8px;line-height:1.6">① 【自分のデータをコピー】して相手に送信<br>② 届いたデータを下に貼り付けて【反映する】</p>
+      <div class="sync-note"><span class="peer-dot"></span>黄色い枠線：仲間が撮影済みの班</div>
+      <p style="font-size:13px;color:#3c3c43;margin-bottom:8px;line-height:1.7">
+        ① 受け取ったデータを下に貼り付けて【反映する】<br>
+        ② 【自分のデータをコピー】して相手に送信<br>
+        <span style="color:#8e8e93;font-size:11px">※ 送信前に必ず受信してからコピーすること</span>
+      </p>
       <textarea id="syncInput" placeholder="受け取ったデータをここに貼り付け"></textarea>
+      <div class="data-size" id="dataSize"></div>
       <div class="btn-row">
         <button class="btn btn-copy" onclick="exportData()">自分のデータをコピー</button>
         <button class="btn btn-import" onclick="importData()">反映する</button>
@@ -150,6 +179,7 @@ textarea{height:72px;resize:none;font-size:12px;font-family:-apple-system,sans-s
 
 </div>
 
+<!-- モーダル -->
 <div class="modal-overlay" id="modal" style="display:none" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-title" id="modalClass"></div>
@@ -160,16 +190,26 @@ textarea{height:72px;resize:none;font-size:12px;font-family:-apple-system,sans-s
 </div>
 
 <script>
+// ── Service Worker ──
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js');
+}
+
+// ── 定数 ──
+const STORE_KEY = 'sync_lite_v3.4';
+const MAX_HISTORY = 3;
+
+// ── 状態 ──
 let pendingType = 'num';
-let activeCellId = null;
+let undoStack = []; // 最大MAX_HISTORY件
+let redoStack = [];
 let state = {
-  config: { myName:'', classNum:4, groupNum:6, groupType:'num', statusNames:'未,撮影済,要確認,不要' },
+  config: { myName:'', classNum:8, groupNum:9, groupType:'num', statusNames:'未,撮影済,要確認,不要' },
   data: {},
   peerData: {}
 };
 
-const STORE_KEY = 'sync_lite_v2';
-
+// ── 初期化 ──
 window.onload = () => {
   const saved = localStorage.getItem(STORE_KEY);
   if(saved){ try{ state = JSON.parse(saved); }catch(e){} }
@@ -183,45 +223,51 @@ window.onload = () => {
   renderGrid();
 };
 
+// ── セクション折りたたみ ──
 function toggleSection(id){
-  const body = document.getElementById('body-'+id);
-  const arrow = document.getElementById('arrow-'+id);
-  body.classList.toggle('open');
-  arrow.classList.toggle('open');
+  document.getElementById('body-'+id).classList.toggle('open');
+  document.getElementById('arrow-'+id).classList.toggle('open');
 }
 
+// ── 表示タイプ ──
 function setPendingType(t){
   pendingType = t;
   updateTypeUI();
 }
 function updateTypeUI(){
-  document.getElementById('typeNum').className = 'type-btn' + (pendingType==='num' ? ' active' : '');
-  document.getElementById('typeAlpha').className = 'type-btn' + (pendingType==='alpha' ? ' active' : '');
+  document.getElementById('typeNum').className = 'type-btn'+(pendingType==='num'?' active':'');
+  document.getElementById('typeAlpha').className = 'type-btn'+(pendingType==='alpha'?' active':'');
 }
 
+// ── 設定保存 ──
 function saveConfig(){
   state.config.myName = document.getElementById('myName').value.trim() || '自分';
   state.config.classNum = Math.max(1, parseInt(document.getElementById('classNum').value)||8);
-  state.config.groupNum = Math.max(1, parseInt(document.getElementById('groupNum').value)||10);
+  state.config.groupNum = Math.max(1, parseInt(document.getElementById('groupNum').value)||9);
   state.config.statusNames = document.getElementById('statusNames').value;
   state.config.groupType = pendingType;
   save(); renderGrid();
   alert('設定を保存しました');
 }
 
+// ── 全リセット ──
 function resetAll(){
-  if(!confirm('すべての進捗・同期データを削除しますか？')) return;
+  if(!confirm('すべての進捗・同期データをリセットしますか？')) return;
   state.data = {};
   state.peerData = {};
+  undoStack = [];
+  redoStack = [];
   save(); renderGrid();
 }
 
+// ── 班ラベル ──
 function groupLabel(g){
   if(state.config.groupType !== 'alpha') return g;
   if(g <= 26) return String.fromCharCode(64+g);
   return String.fromCharCode(64+Math.floor((g-1)/26)) + String.fromCharCode(64+(g-1)%26+1);
 }
 
+// ── グリッド描画 ──
 function renderGrid(){
   const area = document.getElementById('gridArea');
   area.innerHTML = '';
@@ -247,11 +293,11 @@ function renderGrid(){
       const id = `c${c}g${g}`;
       const my = state.data[id] || 0;
       const peer = state.peerData[id] || 0;
-      if(my>0 || peer>0) done++;
-      if(filterOn && (my>0 || peer>0)) continue;
+      if(my > 0 || peer > 0) done++;
+      if(filterOn && (my > 0 || peer > 0)) continue;
       visible++;
       const cell = document.createElement('div');
-      cell.className = `cell s${my}${peer>0?' has-peer':''}`;
+      cell.className = `cell s${my}${peer > 0 ? ' has-peer' : ''}`;
       cell.innerHTML = `<div class="gnum">${groupLabel(g)}</div><div class="glabel">${statusList[my]||''}</div>`;
       cell.onclick = () => openModal(id, c, g, statusList);
       grid.appendChild(cell);
@@ -261,12 +307,15 @@ function renderGrid(){
       area.appendChild(card);
     }
   }
+
   document.getElementById('counter').textContent = `${done} / ${total}`;
-  document.getElementById('progressFill').style.width = (done/total*100)+'%';
+  document.getElementById('progressFill').style.width = (total > 0 ? done/total*100 : 0)+'%';
+  updateHistoryUI();
+  updateDataSize();
 }
 
+// ── モーダル ──
 function openModal(id, classNum, groupNum, statusList){
-  activeCellId = id;
   document.getElementById('modalClass').textContent = `${classNum}組`;
   document.getElementById('modalGroup').textContent = `${groupLabel(groupNum)}班`;
   const current = state.data[id] || 0;
@@ -283,6 +332,7 @@ function openModal(id, classNum, groupNum, statusList){
 }
 
 function setStatus(id, val){
+  pushUndo();
   state.data[id] = val;
   save(); renderGrid();
 }
@@ -290,39 +340,95 @@ function setStatus(id, val){
 function closeModal(e){
   if(e && e.target !== document.getElementById('modal')) return;
   document.getElementById('modal').style.display = 'none';
-  activeCellId = null;
 }
 
-function exportData(){
-  const name = state.config.myName || '自分';
-  const payload = {
-    senderId: name,
+// ── アンドゥ・リドゥ（最大3段） ──
+function pushUndo(){
+  undoStack.push(JSON.parse(JSON.stringify(state.data)));
+  if(undoStack.length > MAX_HISTORY) undoStack.shift();
+  redoStack = [];
+}
+
+function undo(){
+  if(undoStack.length === 0) return;
+  redoStack.push(JSON.parse(JSON.stringify(state.data)));
+  if(redoStack.length > MAX_HISTORY) redoStack.shift();
+  state.data = undoStack.pop();
+  save(); renderGrid();
+}
+
+function redo(){
+  if(redoStack.length === 0) return;
+  undoStack.push(JSON.parse(JSON.stringify(state.data)));
+  if(undoStack.length > MAX_HISTORY) undoStack.shift();
+  state.data = redoStack.pop();
+  save(); renderGrid();
+}
+
+function updateHistoryUI(){
+  const uBtn = document.getElementById('undoBtn');
+  const rBtn = document.getElementById('redoBtn');
+  const uCount = document.getElementById('undoCount');
+  const rCount = document.getElementById('redoCount');
+  uBtn.className = 'hist-btn' + (undoStack.length > 0 ? ' on' : '');
+  rBtn.className = 'hist-btn' + (redoStack.length > 0 ? ' on' : '');
+  uCount.textContent = undoStack.length > 0 ? undoStack.length : '';
+  rCount.textContent = redoStack.length > 0 ? redoStack.length : '';
+}
+
+// ── データサイズ表示 ──
+function updateDataSize(){
+  const el = document.getElementById('dataSize');
+  const payload = buildPayload();
+  const encoded = encodePayload(payload);
+  const bytes = new Blob([encoded]).size;
+  const kb = (bytes / 1024).toFixed(1);
+  el.textContent = `データサイズ: ${bytes} bytes (${kb} KB)`;
+  el.className = 'data-size' + (bytes > 50000 ? ' warn' : '');
+}
+
+// ── データ共有 ──
+function buildPayload(){
+  return {
+    sender: state.config.myName || '自分',
+    v: '3.4',
     data: state.data,
     peerData: state.peerData
   };
-  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-  navigator.clipboard.writeText(encoded).then(()=>alert('データをコピーしました。相手に送ってください。'));
+}
+
+function encodePayload(payload){
+  return btoa(encodeURIComponent(JSON.stringify(payload)));
+}
+
+function exportData(){
+  const encoded = encodePayload(buildPayload());
+  navigator.clipboard.writeText(encoded)
+    .then(() => alert('コピーしました！\nLINEなどで相手に送ってください。'));
 }
 
 function importData(){
   const raw = document.getElementById('syncInput').value.trim();
   if(!raw){ alert('データを貼り付けてください'); return; }
   try{
-    const payload = JSON.parse(decodeURIComponent(escape(atob(raw))));
-    const merged = { ...payload.peerData, ...payload.data };
+    const payload = JSON.parse(decodeURIComponent(atob(raw)));
+    // 相手のdata・peerDataを両方マージ（累積マージ）
+    const merged = Object.assign({}, payload.peerData || {}, payload.data || {});
+    let updated = 0;
     for(const id in merged){
       const newVal = merged[id] || 0;
       const cur = state.peerData[id] || 0;
-      if(newVal > cur) state.peerData[id] = newVal;
+      if(newVal > cur){ state.peerData[id] = newVal; updated++; }
     }
-    save(); renderGrid();
     document.getElementById('syncInput').value = '';
-    alert(`${payload.senderId || '仲間'}のデータを反映しました`);
+    save(); renderGrid();
+    alert(`${payload.sender || '仲間'}のデータを反映しました（${updated}件更新）`);
   }catch(e){
-    alert('データが正しくありません');
+    alert('データが正しくありません。\n正しいデータを貼り付けてください。');
   }
 }
 
+// ── ローカル保存 ──
 function save(){
   localStorage.setItem(STORE_KEY, JSON.stringify(state));
 }
